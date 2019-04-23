@@ -1,1 +1,0 @@
-g++ -std=c11 -Wall helloworld.cpp -o helloworld.exe
