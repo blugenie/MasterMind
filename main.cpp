@@ -38,10 +38,19 @@ int main() {
 	// 0 represents empty
 	// 1-colors represents colors
 	
+	int mastercolors1[colors];
+	int mastercolors2[colors];
+	for (int j=0; j<colors; j++) {
+		 mastercolors1[j] = 0;
+		 mastercolors2[j] = 0;
+	}
+	
 	cout << "I am the codemaker, I will now generate the MASTERCODE" << endl;
 	srand(time(NULL));
 	for (int i=0; i<positions;i++) {
 		mastercode[i] = rand() % colors + 1;
+		mastercolors1[mastercode[i]]++;
+		mastercolors2[mastercode[i]]++;
 		cout << mastercode[i];
 	}
 	cout << endl;
@@ -50,25 +59,71 @@ int main() {
 	//Initialize for guesses
 	int guess[slots][positions];
 	int hints[slots][positions];
+	for (int i=0; i<slots; i++) {
+		for (int j=0; j<positions; j++) {
+			guess[i][j]=0;
+			hints[i][j]=0;
+		}
+	}
 	int usedslots=0;
 	
+	bool correct=false;
 	while (usedslots!=slots) {
 		
 		if (usedslots!=0) {
-			cout << "Do you wish to see all previous guesses?" << endl;
+			//cout << "Do you wish to see all previous guesses?" << endl;
+			
+			cout << "The new hint is: " << endl;
+			cout << hints[usedslots-1][0] << hints[usedslots-1][1] << endl;
+			cout << hints[usedslots-1][2] << hints[usedslots-1][3] << endl;
 		}
 		
 		
 		cout << "Please guess!" << endl;
-		cin >> guess[usedslots][0]
-		cin >> guess[usedslots][1]
-		cin >> guess[usedslots][2]
-		cin >> guess[usedslots][3]
+		cout << "Enter pin 1:" << endl;
+		cin >> guess[usedslots][0];
+		cout << "Enter pin 2:" << endl;
+		cin >> guess[usedslots][1];
+		cout << "Enter pin 3:" << endl;
+		cin >> guess[usedslots][2];
+		cout << "Enter pin 4:" << endl;
+		cin >> guess[usedslots][3];
 		
+		int hk=0;
+		for (int k=0;k<positions;k++) {
+			
+			if (guess[usedslots][k]==mastercode[k]) {
+				hints[usedslots][hk]=2;
+				mastercolors2[mastercode[k]]--;
+				hk++;
+			} else if (mastercolors2[guess[usedslots][k]]>0) {
+				hints[usedslots][hk]=1;
+				mastercolors2[guess[usedslots][k]]--;
+				hk++;
+			}
+			
+			
+		}
 		
+		int corrsum=0;
+		for (int i=0;i<positions;i++) {
+			corrsum += hints[usedslots][i];
+		}
+		if (corrsum==8) {
+			correct = true;
+		}
 		
+		if (correct) {
+			cout << "You broke the mastercode!" << endl;
+			break;
+		}
 		
 		usedslots++;
+		
+		//reset mastercolor array
+		for (int j=0; j<colors; j++) {
+		 mastercolors2[j] = mastercolors1[j];
+		}
 	}
 	
 	
